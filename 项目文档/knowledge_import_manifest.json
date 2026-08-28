@@ -1,0 +1,56 @@
+{
+  "base_url": "http://localhost/v1",
+  "source_archive": "知识库.zip",
+  "datasets": [
+    {
+      "category": "教学学业",
+      "name": "虚拟校园-教学学业",
+      "id": "df3b2e86-e54e-47c9-bc84-bcbac12c5010",
+      "uploaded": 0,
+      "skipped": 73,
+      "failed": [
+        {
+          "file": "《半导体器件物理》.doc",
+          "error": "POST /datasets/df3b2e86-e54e-47c9-bc84-bcbac12c5010/document/create-by-file -> 400: {\"code\":\"invalid_param\",\"message\":\"\",\"status\":400}\n"
+        },
+        {
+          "file": "《半导体物理及固体物理基础》.doc",
+          "error": "POST /datasets/df3b2e86-e54e-47c9-bc84-bcbac12c5010/document/create-by-file -> 400: {\"code\":\"invalid_param\",\"message\":\"\",\"status\":400}\n"
+        },
+        {
+          "file": "《数字集成电路设计》.doc",
+          "error": "POST /datasets/df3b2e86-e54e-47c9-bc84-bcbac12c5010/document/create-by-file -> 400: {\"code\":\"invalid_param\",\"message\":\"\",\"status\":400}\n"
+        },
+        {
+          "file": "《电磁场与电磁波》.doc",
+          "error": "POST /datasets/df3b2e86-e54e-47c9-bc84-bcbac12c5010/document/create-by-file -> 400: {\"code\":\"invalid_param\",\"message\":\"\",\"status\":400}\n"
+        },
+        {
+          "file": "《电路分析》.doc",
+          "error": "POST /datasets/df3b2e86-e54e-47c9-bc84-bcbac12c5010/document/create-by-file -> 400: {\"code\":\"invalid_param\",\"message\":\"\",\"status\":400}\n"
+        }
+      ]
+    },
+    {
+      "category": "知识库构建",
+      "name": "虚拟校园-校园办事",
+      "id": "884e8b80-b969-4b12-8dfa-a841f7b359ba",
+      "uploaded": 0,
+      "skipped": 22,
+      "failed": [
+        {
+          "file": "2024年苏州大学学生意外保险简介.doc",
+          "error": "POST /datasets/884e8b80-b969-4b12-8dfa-a841f7b359ba/document/create-by-file -> 400: {\"code\":\"invalid_param\",\"message\":\"\",\"status\":400}\n"
+        }
+      ]
+    },
+    {
+      "category": "规章制度",
+      "name": "虚拟校园-规章制度",
+      "id": "2d391d55-abb2-44bc-98aa-204cdb89ea9a",
+      "uploaded": 0,
+      "skipped": 12,
+      "failed": []
+    }
+  ]
+}

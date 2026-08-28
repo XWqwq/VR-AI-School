@@ -1,0 +1,15 @@
+将正式 UI 图片放在本文件夹，Unity Inspector 中将 Texture Type 设置为 Sprite (2D and UI)。
+
+固定文件名（扩展名可为 .png、.jpg 等）：
+menu_background
+button_default
+button_ai_guide
+button_map
+button_collection
+button_tasks
+button_scene_main
+button_scene_classroom
+button_scene_exhibition
+button_back
+
+图片缺失时使用代码生成的蓝色临时样式，不影响按钮、页面切换和场景切换功能。

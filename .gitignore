@@ -1,0 +1,70 @@
+# Local secrets and machine-specific configuration
+/key.txt
+/本机配置/*
+!/本机配置/*.example.json
+**/dify_config.json
+**/ollama_config.json
+**/.env
+**/.dify_secret_key
+**/private.pem
+
+# Unity generated state (recreated after opening the project)
+/project/Library/
+/project/Temp/
+/project/Logs/
+/project/obj/
+/project/Build/
+/project/Builds/
+/project/UserSettings/
+/project/.vs/
+/project/.vscode/
+/project/.dotnet/
+/project/.dotnet-cli-home/
+/project/*.csproj
+/project/*.sln
+/project/*.log
+
+# Runtime/build outputs
+/启动日志/
+/交付/
+**/__pycache__/
+*.pyc
+*.apk
+*.apk.meta
+
+# Local Python environment
+/.venv/
+
+# Dify: retain reproducible Docker definitions, never live volumes/secrets
+/dify-1.14.2/*
+!/dify-1.14.2/docker/
+/dify-1.14.2/docker/.env
+/dify-1.14.2/docker/volumes/
+
+# Upstream source trees and extracted inspection copies are downloaded/rebuilt
+/FunASR-main/
+/_pico_inspect/
+/ZhanTing2/
+/_doc_review/
+/.agents/
+
+# Raw working/source collections already imported into the Unity project
+/UI素材全/
+
+# Historical backups and vendor installers; current embedded Unity packages
+# and source assets are versioned under project/ instead.
+/*.zip
+/PICO-Unity-SDK-*.zip
+/PICO Unity Integration SDK-*.zip
+/Unity Live Preview Plugin-*.zip
+/虚拟校园_*备份_*.zip
+
+# Miscellaneous local test media
+/audio.mp3
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.user
+*.suo

@@ -1,0 +1,7 @@
+﻿{
+    "asr_url":  "ws://192.168.137.1:8765",
+    "dify_base_url":  "http://192.168.137.1/v1",
+    "ollama_base_url":  "http://192.168.137.1:11434",
+    "edge_tts_url":  "http://192.168.137.1:8766/synthesize",
+    "edge_tts_voice":  "zh-CN-XiaoxiaoNeural"
+}

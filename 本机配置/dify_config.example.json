@@ -1,0 +1,7 @@
+{
+  "enabled": true,
+  "base_url": "http://localhost/v1",
+  "api_key": "请填写从 Dify 应用 API 页面生成的 app- 开头密钥",
+  "timeout_seconds": 30
+}
+

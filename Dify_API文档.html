@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dify 工作流对话型应用 API 文档</title>
+<style>
+  :root {
+    --bg: #f8f9fa;
+    --card-bg: #fff;
+    --text: #1a1a2e;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --accent: #2563eb;
+    --accent-light: #eff6ff;
+    --code-bg: #1e1e2e;
+    --code-text: #cdd6f4;
+    --method-get: #10b981;
+    --method-post: #3b82f6;
+    --method-delete: #ef4444;
+    --method-put: #f59e0b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+  .container { max-width: 960px; margin: 0 auto; padding: 40px 24px; }
+
+  h1 { font-size: 28px; margin-bottom: 8px; }
+  .subtitle { color: var(--muted); margin-bottom: 32px; font-size: 14px; }
+  h2 { font-size: 20px; margin: 40px 0 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+  h3 { font-size: 16px; margin: 24px 0 12px; }
+
+  .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+
+  .info-grid { display: grid; grid-template-columns: 120px 1fr; gap: 8px 16px; font-size: 14px; }
+  .info-grid dt { color: var(--muted); font-weight: 500; }
+  .info-grid dd { font-weight: 600; }
+
+  .endpoint {
+    display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+    background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px;
+    margin-bottom: 16px; font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; font-size: 14px;
+  }
+  .method {
+    padding: 3px 10px; border-radius: 4px; color: #fff; font-weight: 700; font-size: 12px; letter-spacing: 0.5px;
+    min-width: 52px; text-align: center;
+  }
+  .method.post { background: var(--method-post); }
+  .method.get { background: var(--method-get); }
+  .method.delete { background: var(--method-delete); }
+  .method.put { background: var(--method-put); }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0; }
+  th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--border); }
+  th { background: var(--accent-light); color: var(--accent); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+  td code { background: #f1f5f9; padding: 1px 6px; border-radius: 3px; font-size: 12px; }
+  .required { color: #ef4444; font-weight: 700; }
+  .optional { color: var(--muted); }
+
+  pre { position: relative; background: var(--code-bg); color: var(--code-text); padding: 16px; border-radius: 8px; overflow-x: auto; font-size: 13px; line-height: 1.5; margin: 12px 0; }
+  pre code { font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; }
+  .copy-btn {
+    position: absolute; top: 8px; right: 8px; padding: 4px 10px; font-size: 11px;
+    background: rgba(255,255,255,0.1); color: #ccc; border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 4px; cursor: pointer;
+  }
+  .copy-btn:hover { background: rgba(255,255,255,0.2); color: #fff; }
+
+  .response-block { border-left: 3px solid var(--method-post); padding-left: 16px; margin: 16px 0; }
+  .accordion { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin: 8px 0; }
+  .accordion summary { padding: 12px 16px; cursor: pointer; font-weight: 600; font-size: 14px; background: var(--accent-light); user-select: none; }
+  .accordion summary:hover { background: #dbeafe; }
+  .accordion .content { padding: 16px; }
+
+  .event-list { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+  .event-tag { font-size: 11px; padding: 2px 8px; border-radius: 10px; background: #f1f5f9; color: var(--muted); font-family: monospace; border: 1px solid var(--border); }
+
+  .error-table td:first-child code { background: #fef2f2; color: #dc2626; }
+
+  .toc { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px 20px; margin-bottom: 32px; }
+  .toc h3 { margin-top: 0; }
+  .toc ol { padding-left: 20px; font-size: 14px; }
+  .toc a { color: var(--accent); text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+
+  .note { background: #fffbeb; border: 1px solid #fcd34d; border-left: 4px solid #f59e0b; padding: 12px 16px; border-radius: 4px; font-size: 13px; margin: 12px 0; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Dify 工作流编排对话型应用 API</h1>
+<p class="subtitle">对话应用支持会话持久化，可将之前的聊天记录作为上下文进行回答，适用于聊天/客服 AI 等场景。</p>
+
+<!-- TOC -->
+<div class="toc">
+  <h3>目录</h3>
+  <ol>
+    <li><a href="#base">基础信息</a></li>
+    <li><a href="#chat-messages">POST /chat-messages — 发送对话消息</a></li>
+    <li><a href="#files-upload">POST /files/upload — 上传文件</a></li>
+    <li><a href="#files-preview">GET /files/:file_id/preview — 文件预览</a></li>
+    <li><a href="#stop">POST /chat-messages/:task_id/stop — 停止响应</a></li>
+    <li><a href="#messages">GET /messages — 获取会话历史消息</a></li>
+    <li><a href="#conversations">GET /conversations — 获取会话列表</a></li>
+    <li><a href="#delete-conversation">DELETE /conversations/:id — 删除会话</a></li>
+    <li><a href="#rename">POST /conversations/:id/name — 会话重命名</a></li>
+    <li><a href="#variables">GET/PUT /conversations/:id/variables — 对话变量</a></li>
+    <li><a href="#end-users">GET /end-users/:id — 获取终端用户</a></li>
+    <li><a href="#human-input">GET/POST /form/human_input/:token — 人工介入表单</a></li>
+    <li><a href="#workflow-events">GET /workflow/:task_id/events — 工作流事件流</a></li>
+    <li><a href="#feedbacks">POST /messages/:id/feedbacks — 消息反馈</a></li>
+    <li><a href="#suggested">GET /messages/:id/suggested — 建议问题</a></li>
+    <li><a href="#audio">POST /audio-to-text — 语音转文字</a></li>
+    <li><a href="#errors">错误码速查</a></li>
+  </ol>
+</div>
+
+<!-- BASE INFO -->
+<h2 id="base">1. 基础信息</h2>
+<div class="card">
+  <div class="info-grid">
+    <dt>基础 URL</dt>
+    <dd><code>http://localhost/v1</code></dd>
+    <dt>鉴权方式</dt>
+    <dd><code>Authorization: Bearer {API_KEY}</code></dd>
+    <dt>鉴权说明</dt>
+    <dd>Service API 使用 API-Key 进行鉴权。强烈建议将 API-Key 放在后端存储，而非客户端，以免泄露导致财产损失。</dd>
+  </div>
+</div>
+
+<!-- CHAT MESSAGES -->
+<h2 id="chat-messages">2. 发送对话消息</h2>
+
+<div class="endpoint"><span class="method post">POST</span><span>/chat-messages</span></div>
+
+<h3>Request Body</h3>
+<table>
+  <tr><th>参数</th><th>类型</th><th>说明</th></tr>
+  <tr><td><code>query</code> <span class="required">必需</span></td><td>string</td><td>用户输入/提问内容</td></tr>
+  <tr><td><code>inputs</code> <span class="required">必需</span></td><td>object</td><td>App 定义的变量键值对。文件类型请指定包含 <code>files</code> 键的对象。默认 <code>{}</code></td></tr>
+  <tr><td><code>response_mode</code> <span class="required">必需</span></td><td>string</td><td><code>streaming</code>（流式，基于 SSE 逐字返回）或 <code>blocking</code>（阻塞，等待完成后返回）</td></tr>
+  <tr><td><code>user</code> <span class="required">必需</span></td><td>string</td><td>用户标识，需保证在应用内唯一</td></tr>
+  <tr><td><code>conversation_id</code> <span class="optional">选填</span></td><td>string</td><td>会话 ID，继续之前对话时传入</td></tr>
+  <tr><td><code>files</code> <span class="optional">选填</span></td><td>array[object]</td><td>文件列表。每项含 <code>type</code>、<code>transfer_method</code>、<code>url</code>/<code>upload_file_id</code></td></tr>
+  <tr><td><code>auto_generate_name</code> <span class="optional">选填</span></td><td>bool</td><td>自动生成标题，默认 <code>true</code></td></tr>
+  <tr><td><code>workflow_id</code> <span class="optional">选填</span></td><td>string</td><td>指定工作流版本，不提供则使用已发布版本</td></tr>
+  <tr><td><code>trace_id</code> <span class="optional">选填</span></td><td>string</td><td>链路追踪 ID（也可通过 Header <code>X-Trace-Id</code> 传递）</td></tr>
+  <tr><td><code>trace_session_id</code> <span class="optional">选填</span></td><td>string</td><td>会话分组 ID（也可通过 Header <code>X-Trace-Session-Id</code> 传递）</td></tr>
+</table>
+
+<h3>文件参数说明</h3>
+<table>
+  <tr><th>字段</th><th>类型</th><th>说明</th></tr>
+  <tr><td><code>type</code></td><td>string</td><td>文件类型：<code>document</code> / <code>image</code> / <code>audio</code> / <code>video</code> / <code>custom</code></td></tr>
+  <tr><td><code>transfer_method</code></td><td>string</td><td>传递方式：<code>remote_url</code>（文件地址）或 <code>local_file</code>（上传文件）</td></tr>
+  <tr><td><code>url</code></td><td>string</td><td>文件地址（transfer_method 为 remote_url 时必填）</td></tr>
+  <tr><td><code>upload_file_id</code></td><td>string</td><td>上传文件 ID（transfer_method 为 local_file 时必填）</td></tr>
+</table>
+
+<h3>Request 示例</h3>
+<pre><button class="copy-btn" onclick="copy(this)">复制</button><code>curl -X POST 'http://localhost/v1/chat-messages' \
+  -H 'Authorization: Bearer {api_key}' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "inputs": {},
+    "query": "What are the specs of the iPhone 13 Pro Max?",
+    "response_mode": "streaming",
+    "conversation_id": "",
+    "user": "abc-123",
+    "files": [{
+      "type": "image",
+      "transfer_method": "remote_url",
+      "url": "https://example.com/logo.png"
+    }]
+  }'</code></pre>
+
+<!-- Blocking Response -->
+<h3>阻塞模式 Response</h3>
+<p>返回 <code>ChatCompletionResponse</code>，Content-Type: <code>application/json</code>。</p>
+<table>
+  <tr><th>字段</th><th>类型</th><th>说明</th></tr>
+  <tr><td><code>event</code></td><td>string</td><td>固定为 <code>message</code></td></tr>
+  <tr><td><code>task_id</code></td><td>string</td><td>任务 ID，用于停止响应</td></tr>
+  <tr><td><code>message_id</code></td><td>string</td><td>消息唯一 ID</td></tr>
+  <tr><td><code>conversation_id</code></td><td>string</td><td>会话 ID</td></tr>
+  <tr><td><code>mode</code></td><td>string</td><td>固定为 <code>chat</code></td></tr>
+  <tr><td><code>answer</code></td><td>string</td><td>完整回复内容</td></tr>
+  <tr><td><code>metadata</code></td><td>object</td><td>用量、引用等元数据</td></tr>
+  <tr><td><code>created_at</code></td><td>int</td><td>消息创建时间戳</td></tr>
+</table>
+
+<details class="accordion">
+  <summary>阻塞模式响应示例</summary>
+  <div class="content">
+<pre><button class="copy-btn" onclick="copy(this)">复制</button><code>{
+  "event": "message",
+  "task_id": "c3800678-a077-43df-a102-53f23ed20b88",
+  "id": "9da23599-e713-473b-982c-4328d4f5c78a",
+  "message_id": "9da23599-e713-473b-982c-4328d4f5c78a",
+  "conversation_id": "45701982-8118-4bc5-8e9b-64562b4555f2",
+  "mode": "chat",
+  "answer": "iPhone 13 Pro Max specs are listed here:...",
+  "metadata": {
+    "usage": {
+      "prompt_tokens": 1033,
+      "completion_tokens": 128,
+      "total_tokens": 1161,
+      "total_price": "0.0012890",
+      "currency": "USD",
+      "latency": 0.768
+    },
+    "retriever_resources": [{
+      "position": 1,
+      "dataset_id": "101b4c97-fc2e-463c-90b1-5261a4cdcafb",
+      "dataset_name": "iPhone",
+      "document_name": "iPhone List",
+      "score": 0.9845,
+      "content": "..."
+    }]
+  },
+  "created_at": 1705407629
+}</code></pre>
+  </div>
+</details>
+
+<!-- Streaming Response -->
+<h3>流式模式 Response</h3>
+<p>Content-Type: <code>text/event-stream</code>。每个块以 <code>data:</code> 开头，以 <code>\n\n</code> 分隔。</p>
+<p>支持的 event 类型：</p>
+<div class="event-list">
+  <span class="event-tag">message</span>
+  <span class="event-tag">message_file</span>
+  <span class="event-tag">message_end</span>
+  <span class="event-tag">message_replace</span>
+  <span class="event-tag">tts_message</span>
+  <span class="event-tag">tts_message_end</span>
+  <span class="event-tag">workflow_started</span>
+  <span class="event-tag">node_started</span>
+  <span class="event-tag">node_finished</span>
+  <span class="event-tag">workflow_finished</span>
+  <span class="event-tag">human_input_required</span>
+  <span class="event-tag">workflow_paused</span>
+  <span class="event-tag">error</span>
+  <span class="event-tag">ping</span>
+</div>
+
+<details class="accordion">
+  <summary>message — LLM 文本块事件</summary>
+  <div class="content">
+    <table>
+      <tr><th>字段</th><th>类型</th><th>说明</th></tr>
+      <tr><td><code>task_id</code></td><td>string</td><td>任务 ID</td></tr>
+      <tr><td><code>message_id</code></td><td>string</td><td>消息唯一 ID</td></tr>
+      <tr><td><code>conversation_id</code></td><td>string</td><td>会话 ID</td></tr>
+      <tr><td><code>answer</code></td><td>string</td><td>LLM 返回文本块内容</td></tr>
+      <tr><td><code>created_at</code></td><td>int</td><td>创建时间戳</td></tr>
+    </table>
+  </div>
+</details>
+
+<details class="accordion">
+  <summary>message_end — 消息结束事件</summary>
+  <div class="content">
+    <table>
+      <tr><th>字段</th><th>类型</th><th>说明</th></tr>
+      <tr><td><code>task_id</code></td><td>string</td><td>任务 ID</td></tr>
+      <tr><td><code>message_id</code></td><td>string</td><td>消息唯一 ID</td></tr>
+      <tr><td><code>conversation_id</code></td><td>string</td><td>会话 ID</td></tr>
+      <tr><td><code>metadata</code></td><td>object</td><td>元数据（含 usage、retriever_resources）</td></tr>
+    </table>
+  </div>
+</details>
+
+<details class="accordion">
+  <summary>workflow_started / node_started / node_finished / workflow_finished</summary>
+  <div class="content">
+    <p>工作流执行生命周期事件，用于追踪执行进度和调试。</p>
+    <table>
+      <tr><th>字段</th><th>类型</th><th>说明</th></tr>
+      <tr><td><code>task_id</code></td><td>string</td><td>任务 ID</td></tr>
+      <tr><td><code>workflow_run_id</code></td><td>string</td><td>Workflow 执行 ID</td></tr>
+      <tr><td><code>data.id</code></td><td>string</td><td>执行 ID</td></tr>
+      <tr><td><code>data.workflow_id</code></td><td>string</td><td>关联 Workflow ID</td></tr>
+      <tr><td><code>data.node_id</code></td><td>string</td><td>节点 ID</td></tr>
+      <tr><td><code>data.node_type</code></td><td>string</td><td>节点类型</td></tr>
+      <tr><td><code>data.title</code></td><td>string</td><td>节点名称</td></tr>
+      <tr><td><code>data.status</code></td><td>string</td><td>执行状态：running / succeeded / failed / stopped</td></tr>
+      <tr><td><code>data.outputs</code></td><td>json</td><td>输出内容</td></tr>
+      <tr><td><code>data.elapsed_time</code></td><td>float</td><td>耗时（秒）</td></tr>
+    </table>
+  </div>
+</details>
+
+<details class="accordion">
+  <summary>human_input_required — Human-in-the-Loop 暂停</summary>
+  <div class="content">
+    <table>
+      <tr><th>字段</th><th>类型</th><th>说明</th></tr>
+      <tr><td><code>task_id</code></td><td>string</td><td>任务 ID</td></tr>
+      <tr><td><code>workflow_run_id</code></td><td>string</td><td>Workflow 执行 ID</td></tr>
+      <tr><td><code>data.form_id</code></td><td>string</td><td>表单 ID</td></tr>
+      <tr><td><code>data.node_id</code></td><td>string</td><td>Human Input 节点 ID</td></tr>
+      <tr><td><code>data.form_content</code></td><td>string</td><td>渲染后的表单内容</td></tr>
+      <tr><td><code>data.inputs</code></td><td>array</td><td>表单输入项定义</td></tr>
+      <tr><td><code>data.actions</code></td><td>array</td><td>用户可选动作（id、title、button_style）</td></tr>
+      <tr><td><code>data.form_token</code></td><td>string</td><td>用于提交表单的令牌</td></tr>
+      <tr><td><code>data.expiration_time</code></td><td>timestamp</td><td>表单过期时间（Unix 秒）</td></tr>
+    </table>
+  </div>
+</details>
+
+<details class="accordion">
+  <summary>流式响应完整示例</summary>
+  <div class="content">
+<pre><button class="copy-btn" onclick="copy(this)">复制</button><code>data: {"event":"workflow_started","task_id":"...","workflow_run_id":"...","data":{...}}
+data: {"event":"node_started","task_id":"...","data":{"node_type":"start","title":"Start",...}}
+data: {"event":"node_finished","task_id":"...","data":{"status":"succeeded",...}}
+data: {"event":"message","message_id":"...","conversation_id":"...","answer":" I"}
+data: {"event":"message","answer":"'m"}
+data: {"event":"message","answer":" glad"}
+data: {"event":"message","answer":" to"}
+data: {"event":"message","answer":" meet"}
+data: {"event":"message","answer":" you"}
+data: {"event":"message_end","conversation_id":"...","metadata":{...}}</code></pre>
+  </div>
+</details>
+
+<!-- FILES UPLOAD -->
+<h2 id="files-upload">3. 上传文件</h2>
+<div class="endpoint"><span class="method post">POST</span><span>/files/upload</span></div>
+<p>使用 <code>multipart/form-data</code> 上传文件，支持的应用所支持的所有格式。</p>
+<table>
+  <tr><th>参数</th><th>类型</th><th>说明</th></tr>
+  <tr><td><code>file</code> <span class="required">必需</span></td><td>file</td><td>要上传的文件</td></tr>
+  <tr><td><code>user</code> <span class="required">必需</span></td><td>string</td><td>用户标识，需与发送消息的 user 一致</td></tr>
+</table>
+
+<h3>Response</h3>
+<table>
+  <tr><th>字段</th><th>类型</th><th>说明</th></tr>
+  <tr><td><code>id</code></td><td>uuid</td><td>文件 ID（用于发送消息时引用）</td></tr>
+  <tr><td><code>name</code></td><td>string</td><td>文件名</td></tr>
+  <tr><td><code>size</code></td><td>int</td><td>文件大小（byte）</td></tr>
+  <tr><td><code>extension</code></td><td>string</td><td>文件后缀</td></tr>
+  <tr><td><code>mime_type</code></td><td>string</td><td>MIME 类型</td></tr>
+  <tr><td><code>created_at</code></td><td>timestamp</td><td>上传时间</td></tr>
+</table>
+
+<pre><button class="copy-btn" onclick="copy(this)">复制</button><code>curl -X POST 'http://localhost/v1/files/upload' \
+  -H 'Authorization: Bearer {api_key}' \
+  -F 'file=@localfile;type=image/png' \
+  -F 'user=abc-123'</code></pre>
+
+<!-- FILES PREVIEW -->
+<h2 id="files-preview">4. 文件预览</h2>
+<div class="endpoint"><span class="method get">GET</span><span>/files/:file_id/preview</span></div>
+<p>预览或下载已上传的文件。Query 参数 <code>as_attachment=true</code> 可强制下载。</p>
+
+<!-- STOP -->
+<h2 id="stop">5. 停止响应（仅流式模式）</h2>
+<div class="endpoint"><span class="method post">POST</span><span>/chat-messages/:task_id/stop</span></div>
+<table>
+  <tr><th>参数</th><th>类型</th><th>说明</th></tr>
+  <tr><td><code>task_id</code> (path) <span class="required">必需</span></td><td>string</td><td>任务 ID，从流式 Chunk 中获取</td></tr>
+  <tr><td><code>user</code> (body) <span class="required">必需</span></td><td>string</td><td>用户标识</td></tr>
+</table>
+
+<pre><button class="copy-btn" onclick="copy(this)">复制</button><code>curl -X POST 'http://localhost/v1/chat-messages/:task_id/stop' \
+  -H 'Authorization: Bearer {api_key}' \
+  -H 'Content-Type: application/json' \
+  -d '{"user": "abc-123"}'</code></pre>
+
+<!-- MESSAGES -->
+<h2 id="messages">6. 获取会话历史消息</h2>
+<div class="endpoint"><span class="method get">GET</span><span>/messages</span></div>
+<table>
+  <tr><th>参数</th><th>类型</th><th>说明</th></tr>
+  <tr><td><code>conversation_id</code> <span class="required">必需</span></td><td>string</td><td>会话 ID</td></tr>
+  <tr><td><code>user</code> <span class="required">必需</span></td><td>string</td><td>用户标识</td></tr>
+  <tr><td><code>first_id</code> <span class="optional">选填</span></td><td>string</td><td>当前页第一条记录 ID，默认 null</td></tr>
+  <tr><td><code>limit</code> <span class="optional">选填</span></td><td>int</td><td>返回条数，默认 20</td></tr>
+</table>
+
+<details class="accordion">
+  <summary>响应示例</summary>
+  <div class="content">
+<pre><button class="copy-btn" onclick="copy(this)">复制</button><code>{
+  "limit": 20,
+  "has_more": false,
+  "data": [{
+    "id": "a076a87f-...",
+    "conversation_id": "cd78daf6-...",
+    "inputs": {"name": "dify"},
+    "query": "iphone 13 pro",
+    "answer": "The iPhone 13 Pro, released on September 24, 2021...",
+    "message_files": [],
+    "feedback": null,
+    "retriever_resources": [...],
+    "created_at": 1705569239
+  }]
+}</code></pre>
+  </div>
+</details>
+
+<!-- CONVERSATIONS -->
+<h2 id="conversations">7. 获取会话列表</h2>
+<div class="endpoint"><span class="method get">GET</span><span>/conversations</span></div>
+<table>
+  <tr><th>参数</th><th>类型</th><th>说明</th></tr>
+  <tr><td><code>user</code> <span class="required">必需</span></td><td>string</td><td>用户标识</td></tr>
+  <tr><td><code>last_id</code> <span class="optional">选填</span></td><td>string</td><td>当前页最后一条记录 ID</td></tr>
+  <tr><td><code>limit</code> <span class="optional">选填</span></td><td>int</td><td>返回条数，默认 20，最大 100</td></tr>
+  <tr><td><code>sort_by</code> <span class="optional">选填</span></td><td>string</td><td>排序：<code>created_at</code> / <code>-updated_at</code> 等</td></tr>
+</table>
+
+<details class="accordion">
+  <summary>响应示例</summary>
+  <div class="content">
+<pre><button class="copy-btn" onclick="copy(this)">复制</button><code>{
+  "limit": 20,
+  "has_more": false,
+  "data": [{
+    "id": "10799fb8-64f7-4296-bbf7-b42bfbe0ae54",
+    "name": "New chat",
+    "inputs": {"book": "book", "myName": "Lucy"},
+    "status": "normal",
+    "created_at": 1679667915,
+    "updated_at": 1679667915
+  }]
+}</code></pre>
+  </div>
+</details>
+
+<!-- DELETE CONVERSATION -->
+<h2 id="delete-conversation">8. 删除会话</h2>
+<div class="endpoint"><span class="method delete">DELETE</span><span>/conversations/:conversation_id</span></div>
+<table>
+  <tr><th>参数</th><th>类型</th><th>说明</th></tr>
+  <tr><td><code>conversation_id</code> (path) <span class="required">必需</span></td><td>string</td><td>会话 ID</td></tr>
+  <tr><td><code>user</code> (body) <span class="required">必需</span></td><td>string</td><td>用户标识</td></tr>
+</table>
+<pre><button class="copy-btn" onclick="copy(this)">复制</button><code>curl -X DELETE 'http://localhost/v1/conversations/{id}' \
+  -H 'Authorization: Bearer {api_key}' \
+  -H 'Content-Type: application/json' \
+  -d '{"user": "abc-123"}'</code></pre>
+<p>响应：<code>204 No Content</code></p>
+
+<!-- RENAME -->
+<h2 id="rename">9. 会话重命名</h2>
+<div class="endpoint"><span class="method post">POST</span><span>/conversations/:conversation_id/name</span></div>
+<table>
+  <tr><th>参数</th><th>类型</th><th>说明</th></tr>
+  <tr><td><code>name</code> <span class="optional">选填</span></td><td>string</td><td>名称，auto_generate 为 true 时可不传</td></tr>
+  <tr><td><code>auto_generate</code> <span class="optional">选填</span></td><td>bool</td><td>自动生成标题，默认 false</td></tr>
+  <tr><td><code>user</code> <span class="required">必需</span></td><td>string</td><td>用户标识</td></tr>
+</table>
+
+<!-- VARIABLES -->
+<h2 id="variables">10. 对话变量</h2>
+
+<div class="endpoint"><span class="method get">GET</span><span>/conversations/:conversation_id/variables</span></div>
+<p>获取特定对话中捕获的变量。Query: <code>user</code>（必需）、<code>last_id</code>、<code>limit</code>、<code>variable_name</code>。</p>
+
+<div class="endpoint"><span class="method put">PUT</span><span>/conversations/:conversation_id/variables/:variable_id</span></div>
+<p>更新对话变量值。Body: <code>{"value": "新值", "user": "abc-123"}</code>。</p>
+
+<!-- END USERS -->
+<h2 id="end-users">11. 获取终端用户</h2>
+<div class="endpoint"><span class="method get">GET</span><span>/end-users/:end_user_id</span></div>
+<p>通过终端用户 ID 获取用户信息。</p>
+
+<!-- HUMAN INPUT -->
+<h2 id="human-input">12. 人工介入表单 (Human-in-the-Loop)</h2>
+
+<div class="endpoint"><span class="method get">GET</span><span>/form/human_input/:form_token</span></div>
+<p>获取待处理表单。返回 <code>form_content</code>、<code>inputs</code>、<code>user_actions</code>、<code>expiration_time</code>。</p>
+
+<div class="endpoint"><span class="method post">POST</span><span>/form/human_input/:form_token</span></div>
+<p>提交表单。Body: <code>{"inputs": {"field": "value"}, "action": "approve", "user": "abc-123"}</code>。</p>
+
+<!-- WORKFLOW EVENTS -->
+<h2 id="workflow-events">13. 工作流事件流（恢复后继续订阅）</h2>
+<div class="endpoint"><span class="method get">GET</span><span>/workflow/:task_id/events</span></div>
+<table>
+  <tr><th>参数</th><th>类型</th><th>说明</th></tr>
+  <tr><td><code>task_id</code> (path) <span class="required">必需</span></td><td>string</td><td>workflow_run_id</td></tr>
+  <tr><td><code>user</code> (query) <span class="required">必需</span></td><td>string</td><td>终端用户标识</td></tr>
+  <tr><td><code>include_state_snapshot</code> <span class="optional">选填</span></td><td>bool</td><td>先回放持久化状态快照</td></tr>
+  <tr><td><code>continue_on_pause</code> <span class="optional">选填</span></td><td>bool</td><td>暂停时保持连接直到 finished</td></tr>
+</table>
+
+<!-- FEEDBACKS -->
+<h2 id="feedbacks">14. 消息反馈（点赞）</h2>
+<div class="endpoint"><span class="method post">POST</span><span>/messages/:message_id/feedbacks</span></div>
+<table>
+  <tr><th>参数</th><th>类型</th><th>说明</th></tr>
+  <tr><td><code>rating</code> <span class="required">必需</span></td><td>string</td><td><code>like</code> / <code>dislike</code> / <code>null</code>（撤销）</td></tr>
+  <tr><td><code>user</code> <span class="required">必需</span></td><td>string</td><td>用户标识</td></tr>
+  <tr><td><code>content</code> <span class="optional">选填</span></td><td>string</td><td>反馈信息</td></tr>
+</table>
+
+<p>另外 <code>GET /app/feedbacks?page=1&limit=20</code> 可获取应用的消息反馈列表。</p>
+
+<!-- SUGGESTED -->
+<h2 id="suggested">15. 建议问题列表</h2>
+<div class="endpoint"><span class="method get">GET</span><span>/messages/:message_id/suggested</span></div>
+<p>获取下一轮建议问题。Query: <code>user</code>（必需）。返回 <code>{"result": "success", "data": ["问题1", "问题2", ...]}</code>。</p>
+
+<!-- AUDIO -->
+<h2 id="audio">16. 语音转文字</h2>
+<div class="endpoint"><span class="method post">POST</span><span>/audio-to-text</span></div>
+<p>使用 multipart/form-data 上传语音文件。</p>
+<table>
+  <tr><th>参数</th><th>类型</th><th>说明</th></tr>
+  <tr><td><code>file</code> <span class="required">必需</span></td><td>file</td><td>语音文件（mp3/mp4/mpeg/mpga/m4a/wav/webm，≤15MB）</td></tr>
+  <tr><td><code>user</code> <span class="required">必需</span></td><td>string</td><td>用户标识</td></tr>
+</table>
+<p>返回：<code>{"text": "转文字结果"}</code></p>
+
+<!-- ERRORS -->
+<h2 id="errors">17. 错误码速查</h2>
+<table class="error-table">
+  <tr><th>状态码</th><th>code</th><th>说明</th></tr>
+  <tr><td>400</td><td><code>invalid_param</code></td><td>传入参数异常</td></tr>
+  <tr><td>400</td><td><code>app_unavailable</code></td><td>App 配置不可用</td></tr>
+  <tr><td>400</td><td><code>provider_not_initialize</code></td><td>无可用模型凭据配置</td></tr>
+  <tr><td>400</td><td><code>provider_quota_exceeded</code></td><td>模型调用额度不足</td></tr>
+  <tr><td>400</td><td><code>model_currently_not_support</code></td><td>当前模型不可用</td></tr>
+  <tr><td>400</td><td><code>workflow_not_found</code></td><td>指定工作流版本未找到</td></tr>
+  <tr><td>400</td><td><code>draft_workflow_error</code></td><td>无法使用草稿工作流版本</td></tr>
+  <tr><td>400</td><td><code>workflow_id_format_error</code></td><td>工作流 ID 格式错误，需 UUID</td></tr>
+  <tr><td>400</td><td><code>completion_request_error</code></td><td>文本生成失败</td></tr>
+  <tr><td>400</td><td><code>no_file_uploaded</code></td><td>必须提供文件</td></tr>
+  <tr><td>400</td><td><code>too_many_files</code></td><td>目前只接受一个文件</td></tr>
+  <tr><td>401</td><td><code>unauthorized</code></td><td>API Key 无效或缺失</td></tr>
+  <tr><td>404</td><td>-</td><td>对话不存在 / 文件未找到</td></tr>
+  <tr><td>413</td><td><code>file_too_large</code></td><td>文件太大</td></tr>
+  <tr><td>415</td><td><code>unsupported_file_type</code></td><td>不支持的文件类型</td></tr>
+  <tr><td>500</td><td>-</td><td>服务内部异常</td></tr>
+</table>
+
+</div>
+
+<script>
+function copy(btn) {
+  const pre = btn.parentElement;
+  const code = pre.querySelector('code').textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    btn.textContent = '已复制!';
+    setTimeout(() => btn.textContent = '复制', 1500);
+  });
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,6 @@
+funasr==1.4.3
+modelscope==1.39.1
+websockets==16.1.1
+edge-tts==7.2.8
+torch>=2.6
+

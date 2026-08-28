@@ -1,0 +1,30 @@
+{
+  "base_url": "http://localhost/v1",
+  "source_archive": "知识库补充-虚拟校园体验说明.zip",
+  "datasets": [
+    {
+      "category": "教学学业",
+      "name": "虚拟校园-教学学业",
+      "id": "df3b2e86-e54e-47c9-bc84-bcbac12c5010",
+      "uploaded": 0,
+      "skipped": 0,
+      "failed": []
+    },
+    {
+      "category": "知识库构建",
+      "name": "虚拟校园-校园办事",
+      "id": "884e8b80-b969-4b12-8dfa-a841f7b359ba",
+      "uploaded": 0,
+      "skipped": 1,
+      "failed": []
+    },
+    {
+      "category": "规章制度",
+      "name": "虚拟校园-规章制度",
+      "id": "2d391d55-abb2-44bc-98aa-204cdb89ea9a",
+      "uploaded": 0,
+      "skipped": 0,
+      "failed": []
+    }
+  ]
+}
