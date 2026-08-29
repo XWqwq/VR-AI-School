@@ -178,7 +178,23 @@ try {
         edge_tts_url = "http://${lanIp}:8766/synthesize"
         edge_tts_voice = 'zh-CN-XiaoxiaoNeural'
     }
-    $networkConfig | ConvertTo-Json | Set-Content -LiteralPath $unityNetworkConfig -Encoding UTF8
+    $networkConfigChanged = $true
+    if (Test-Path -LiteralPath $unityNetworkConfig) {
+        try {
+            $existingNetworkConfig = Get-Content -Raw -LiteralPath $unityNetworkConfig | ConvertFrom-Json
+            $networkConfigChanged = $networkConfig.Keys | Where-Object {
+                [string]$existingNetworkConfig.$_ -ne [string]$networkConfig[$_]
+            } | Select-Object -First 1
+        } catch {
+            $networkConfigChanged = $true
+        }
+    }
+    if ($networkConfigChanged) {
+        $networkConfig | ConvertTo-Json | Set-Content -LiteralPath $unityNetworkConfig -Encoding UTF8
+        Write-RunLog 'PICO 网络地址已更新到 Unity 配置'
+    } else {
+        Write-RunLog 'Unity 中的 PICO 网络地址已是最新，无需改写'
+    }
 
     # 1. Ollama
     if (-not (Test-Http 'http://localhost:11434/api/tags')) {
